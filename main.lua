@@ -1,19 +1,4 @@
 
-repeat
-	task.wait()
-until game:IsLoaded()
-
---// Client variables
-local plr = game.Players.LocalPlayer
-local mouse = plr:GetMouse()
-
-
---// Services
-
-local tweenservice = game:GetService("TweenService")
-local uis = game:GetService("UserInputService")
-local runservice = game:GetService("RunService")
-
 --[[
 
 	#Todo
@@ -31,6 +16,21 @@ local runservice = game:GetService("RunService")
 	Ping??
 	
 ]]
+
+repeat
+	task.wait()
+until game:IsLoaded()
+
+--// Client variables
+local plr = game.Players.LocalPlayer
+local mouse = plr:GetMouse()
+
+
+--// Services
+
+local tweenservice = game:GetService("TweenService")
+local uis = game:GetService("UserInputService")
+local runservice = game:GetService("RunService")
 
 prismaGUI = {}
 
@@ -393,6 +393,9 @@ function prismaGUI:Window(data)
 		return TextBox
 	end
 	
+	function rightclickArgument(data)
+		print(data.Name)
+	end
 	
 	function self:Button(data)
 		
@@ -470,7 +473,9 @@ function prismaGUI:Window(data)
 			TextButton.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
 		end)
 		
-		
+		TextButton.MouseButton2Click:Connect(function()
+			rightclickArgument(data)
+		end)
 		
 		return {Data = data, Obj = TextButton}
 	end
@@ -546,6 +551,10 @@ function prismaGUI:Window(data)
 				TextButton.BackgroundColor3 = prismaGUI.config.Personalization["Toggle On Colour"]
 				data.NormalFunc()
 			end
+		end)
+
+		TextButton.MouseButton2Click:Connect(function()
+			rightclickArgument(data)
 		end)
 
 		return {Data = data, Obj = TextButton}
