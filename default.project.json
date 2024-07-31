@@ -1,0 +1,15 @@
+{
+  "name": "Prisma_Utility",
+  "tree": {
+    "$className": "DataModel",
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/main"
+        }
+      }
+    }
+
+  }
+}

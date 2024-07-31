@@ -486,6 +486,9 @@ function prismaGUI:Window(data)
 			warn("No function provided for togglebutton")
 			return
 		end
+        if data.State == nil then
+            data.State = false
+        end
 
 		local TextButton = Instance.new("TextButton")
 		local UIPadding = Instance.new("UIPadding")
@@ -521,6 +524,10 @@ function prismaGUI:Window(data)
 			
 			if data.State == false then
 				TextButton.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
+
+				if data.OffFunc ~= nil then
+					data.OffFunc()
+				end
 			end
 		end)
 		
@@ -530,6 +537,10 @@ function prismaGUI:Window(data)
 			
 			if data.State == false then
 				TextButton.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
+
+				if data.OffFunc ~= nil then
+					data.OffFunc()
+				end
 			end
 		end
 
@@ -574,11 +585,15 @@ local world = prismaGUI:Window({
 })
 world.Obj.Position += UDim2.new(0,350, 0, 0)
 
-client:Button({
+client:Toggle({
 	Name = "Super Speed",
+    State = false,
 	Func = function()
 		plr.Character.Humanoid.WalkSpeed = 100
 	end,
+	OffFunc = function()
+		plr.Character.Humanoid.WalkSpeed = 16
+	end
 })
 
 client:Button({
