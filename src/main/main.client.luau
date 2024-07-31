@@ -41,8 +41,9 @@ prismaGUI.Gui.IgnoreGuiInset = true
 prismaGUI.Gui.DisplayOrder = 9999
 prismaGUI.Gui.Parent = plr.PlayerGui
 
+
 prismaGUI.config = {
-	Version = "1.1.0",
+	Version = "<!#FV> 1.3.0 </#FV>",
 	Personalization = {
 		["Toggle On Colour"] = Color3.fromRGB(0, 141, 212),
 		["Hover Colour"] = Color3.fromRGB(47, 47, 47)
@@ -193,6 +194,8 @@ function prismaGUI:Window(data)
 	contents.MidImage = "rbxassetid://13458741869"
 	contents.ScrollBarThickness = 5
 	contents.TopImage = ""
+	contents.ScrollingEnabled = false
+	contents.ScrollBarThickness = 0
 	
 	contentsBG.Name = "contents"
 	contentsBG.Parent = template
@@ -218,13 +221,24 @@ function prismaGUI:Window(data)
 	
 	local layout = Instance.new("UIListLayout",contents)
 	layout.Padding = UDim.new(0,0)
+
+	local function updateContents()
+		local size = layout.AbsoluteContentSize;
+		local padding = layout.Parent.UIPadding;
+
+		size = size + Vector2.new(0, padding.PaddingBottom.Offset + padding.PaddingTop.Offset);
+		contents.Size = UDim2.new(1, 0, 0, size.Y)
+	end
 	
 	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 		local size = layout.AbsoluteContentSize;
 		local padding = layout.Parent.UIPadding;
 
 		size = size + Vector2.new(0, padding.PaddingBottom.Offset + padding.PaddingTop.Offset);
-		contents.CanvasSize = UDim2.new(0, 0, 0, size.Y)
+
+		if self.State then
+			updateContents()
+		end
 	end)
 	
 	self.Obj = template
@@ -306,7 +320,7 @@ function prismaGUI:Window(data)
 		size = size + Vector2.new(0, padding.PaddingBottom.Offset + padding.PaddingTop.Offset);
 		
 		if self.State == true then
-			contents.ScrollingEnabled = true
+			--contents.ScrollingEnabled = true
 			
 			tweenservice:Create(toggle, TweenInfo.new(speed/2,Enum.EasingStyle.Exponential,Enum.EasingDirection.Out),{
 				Rotation = 180
@@ -319,7 +333,7 @@ function prismaGUI:Window(data)
 			self.DB = false
 		else
 			
-			contents.ScrollingEnabled = false
+			--contents.ScrollingEnabled = false
 			
 			tweenservice:Create(toggle, TweenInfo.new(speed/2,Enum.EasingStyle.Exponential,Enum.EasingDirection.Out),{
 				Rotation = 90
@@ -369,6 +383,7 @@ function prismaGUI:Window(data)
 		UICorner.CornerRadius = UDim.new(0, 4)
 		
 		parent.MouseEnter:Connect(function()
+			if data.ContextOpen then return end
 			TextBox.Visible = true
 		end)
 		
@@ -394,7 +409,46 @@ function prismaGUI:Window(data)
 	end
 	
 	function rightclickArgument(data)
-		print(data.Name)
+		if data.Arguments ~= nil then
+			local button : TextButton = data.Obj
+			if data.ContextOpen == nil then
+				data.ContextOpen = false 
+				
+				local mainContent = Instance.new("Frame",button)
+				mainContent.Name = "ArgumentContents"
+				mainContent.AnchorPoint = Vector2.new(0, 1)
+				mainContent.Size = UDim2.new(0.95, 0, 0.7, 0)
+				mainContent.Position = UDim2.new(0, 0, 1, 0)
+				mainContent.BackgroundTransparency = 1
+				mainContent.Visible = false
+				local layout = Instance.new("UIGridLayout",mainContent)
+				layout.CellSize = UDim2.new(1, 0, 0, 25)
+
+				for _,argument in pairs(data.Arguments) do
+					local arg = Instance.new("Frame",mainContent)
+				end
+
+			end
+			data.ContextOpen = not data.ContextOpen
+			local argumentContents = button:FindFirstChild("ArgumentContents")
+			if data.ContextOpen then --// Open
+				tweenservice:Create(button, TweenInfo.new(0.2), {
+					Size = UDim2.new(1, 0, 0, 70 + argumentContents:FindFirstChildOfClass("UIGridLayout").AbsoluteContentSize.Y)
+				}):Play()
+
+				button.TextYAlignment = Enum.TextYAlignment.Top			
+				button:FindFirstChildOfClass("TextBox").Visible = false
+				argumentContents.Visible = true
+
+			else --// Close
+				tweenservice:Create(button, TweenInfo.new(0.2), {
+					Size = UDim2.new(1, 0, 0, 35)
+				}):Play()
+				button.TextYAlignment = Enum.TextYAlignment.Center
+				button:FindFirstChildOfClass("TextBox").Visible = true
+				argumentContents.Visible = false
+			end
+		end
 	end
 	
 	function self:Button(data)
@@ -564,6 +618,8 @@ function prismaGUI:Window(data)
 			end
 		end)
 
+		data.Obj = TextButton
+
 		TextButton.MouseButton2Click:Connect(function()
 			rightclickArgument(data)
 		end)
@@ -593,7 +649,16 @@ client:Toggle({
 	end,
 	OffFunc = function()
 		plr.Character.Humanoid.WalkSpeed = 16
-	end
+	end,
+	Arguments = {
+		{
+			Name = "Speed",
+			Type = "Input",
+			Func = function()
+				
+			end
+		},
+	},
 })
 
 client:Button({
