@@ -34,7 +34,7 @@ local runservice = game:GetService("RunService")
 prismaGUI = {}
 
 prismaGUI.config = {
-	Version = "<!#FV> 1.5.2 </#FV>",
+	Version = "<!#FV> 1.5.3 </#FV>",
 	ToggleGUIBind = Enum.KeyCode.Insert,
 	Personalization = {
 		["Visible On Execution"] = false,
@@ -64,8 +64,15 @@ function bindObject(object, key)
 	end
 	
 	if bind ~= nil then
-		bind.Key = key
+		if key == Enum.KeyCode.Unknown then
+			bind.Key = Enum.KeyCode.ButtonA
+		else
+			bind.Key = key
+		end
 	else
+		if key == Enum.KeyCode.Unknown then
+			return
+		end
 		table.insert(binds, {
 			Name = object.Name,
 			Key = key,
@@ -348,6 +355,27 @@ function prismaGUI:Window(data)
 		end
 		
 	end
+
+	function doKeyTextbox(TextBox)
+		wait()
+		local connection
+		local keyCode
+		
+		connection = uis.InputBegan:Connect(function(input, proccessed)
+			if input.KeyCode == Enum.KeyCode.Unknown then
+				TextBox:ReleaseFocus()
+				connection:Disconnect()
+				keyCode = Enum.KeyCode.ButtonL1
+				return
+			end
+			TextBox.Text = input.KeyCode.Name
+			keyCode = input.KeyCode
+			TextBox:ReleaseFocus()
+			connection:Disconnect()
+		end)
+		repeat task.wait() until keyCode ~= nil
+		return keyCode
+	end
 	
 	local function addBindButton(parent, data)
 		local TextBox = Instance.new("TextBox")
@@ -395,15 +423,8 @@ function prismaGUI:Window(data)
 		end)
 		
 		TextBox.Focused:Connect(function()
-			wait()
-			local connection
-			
-			connection = uis.InputBegan:Connect(function(input, proccessed)
-				bindObject(data, input.KeyCode)
-				TextBox.Text = input.KeyCode.Name
-				TextBox:ReleaseFocus()
-				connection:Disconnect()
-			end)
+			local key = doKeyTextbox(TextBox)
+			bindObject(data, key)
 		end)
 		
 		return TextBox
@@ -518,15 +539,8 @@ function prismaGUI:Window(data)
 						stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
 						box.Focused:Connect(function()
-							wait()
-							local connection
-							
-							connection = uis.InputBegan:Connect(function(input, proccessed)
-								argument.Func(data,input.KeyCode)
-								box.Text = input.KeyCode.Name
-								box:ReleaseFocus()
-								connection:Disconnect()
-							end)
+							local key = doKeyTextbox(box)
+							argument.Func(data,key)
 						end)
 					end
 					
