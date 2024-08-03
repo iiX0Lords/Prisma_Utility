@@ -43,7 +43,7 @@ prismaGUI.Gui.Parent = plr.PlayerGui
 
 
 prismaGUI.config = {
-	Version = "<!#FV> 1.3.1 </#FV>",
+	Version = "<!#FV> 1.4.1 </#FV>",
 	Personalization = {
 		["Toggle On Colour"] = Color3.fromRGB(0, 141, 212),
 		["Hover Colour"] = Color3.fromRGB(47, 47, 47)
@@ -411,16 +411,56 @@ function prismaGUI:Window(data)
 				
 				local mainContent = Instance.new("Frame",button)
 				mainContent.Name = "ArgumentContents"
-				mainContent.AnchorPoint = Vector2.new(0, 1)
+				mainContent.AnchorPoint = Vector2.new(0, 0)
 				mainContent.Size = UDim2.new(0.95, 0, 0.7, 0)
-				mainContent.Position = UDim2.new(0, 0, 1, 0)
+				mainContent.Position = UDim2.new(0, 0, 0, 23)
 				mainContent.BackgroundTransparency = 1
 				mainContent.Visible = false
 				local layout = Instance.new("UIGridLayout",mainContent)
 				layout.CellSize = UDim2.new(1, 0, 0, 25)
+				layout.CellPadding = UDim2.new(0, 0, 0, 10)
 
 				for _,argument in pairs(data.Arguments) do
 					local arg = Instance.new("Frame",mainContent)
+					arg.BackgroundTransparency = 1
+
+					if argument.Type == "Input" then
+						local box = Instance.new("TextBox")
+						local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
+						local UICorner = Instance.new("UICorner")
+						local stroke = Instance.new("UIStroke",box)
+
+						--Properties:
+
+						box.Name = "TextLabel"
+						box.Parent = arg
+						box.Active = false
+						box.AnchorPoint = Vector2.new(0, 0)
+						box.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
+						box.Position = UDim2.new(0, 0, 0, 0)
+						box.Selectable = false
+						box.Size = UDim2.new(0.800000012, 0, 1, 0)
+						box.TextColor3 = Color3.fromRGB(209, 209, 209)
+						box.Text = argument.Name
+						box.TextScaled = true
+						box.TextWrapped = true
+
+						UITextSizeConstraint.Parent = box
+						UITextSizeConstraint.MaxTextSize = 10
+
+						UICorner.CornerRadius = UDim.new(0, 6)
+						UICorner.Parent = box
+
+						stroke.Color = Color3.fromRGB(83, 83, 83)
+						stroke.Thickness = 2
+						stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+						box.FocusLost:Connect(function(enterPressed, inputThatCausedFocusLoss)
+							argument.Func(data,box.Text)
+						end)
+
+					end
+					
 				end
 
 			end
@@ -429,10 +469,10 @@ function prismaGUI:Window(data)
 
 			if data.ContextOpen then --// Open
 				tweenservice:Create(button, TweenInfo.new(0.2), {
-					Size = UDim2.new(1, 0, 0, 70 + argumentContents:FindFirstChildOfClass("UIGridLayout").AbsoluteContentSize.Y)
+					Size = UDim2.new(1, 0, 0, 40 + argumentContents:FindFirstChildOfClass("UIGridLayout").AbsoluteContentSize.Y)
 				}):Play()
 
-				button:FindFirstAncestorOfClass("UIPadding").PaddingTop = UDim.new(0, 10)
+				button:FindFirstChildOfClass("UIPadding").PaddingTop = UDim.new(0, 10)
 
 				button.TextYAlignment = Enum.TextYAlignment.Top			
 				button:FindFirstChildOfClass("TextBox").Visible = false
@@ -443,7 +483,7 @@ function prismaGUI:Window(data)
 					Size = UDim2.new(1, 0, 0, 35)
 				}):Play()
 
-				button:FindFirstAncestorOfClass("UIPadding").PaddingTop = UDim.new(0, 0)
+				button:FindFirstChildOfClass("UIPadding").PaddingTop = UDim.new(0, 0)
 
 				button.TextYAlignment = Enum.TextYAlignment.Center
 				button:FindFirstChildOfClass("TextBox").Visible = true
@@ -615,7 +655,7 @@ function prismaGUI:Window(data)
 			
 			if data.State then
 				TextButton.BackgroundColor3 = prismaGUI.config.Personalization["Toggle On Colour"]
-				data.NormalFunc()
+				data.NormalFunc(data)
 			end
 		end)
 
@@ -645,8 +685,8 @@ world.Obj.Position += UDim2.new(0,350, 0, 0)
 client:Toggle({
 	Name = "Super Speed",
     State = false,
-	Func = function()
-		plr.Character.Humanoid.WalkSpeed = 100
+	Func = function(self)
+		plr.Character.Humanoid.WalkSpeed = self.Speed or 100
 	end,
 	OffFunc = function()
 		plr.Character.Humanoid.WalkSpeed = 16
@@ -655,8 +695,8 @@ client:Toggle({
 		{
 			Name = "Speed",
 			Type = "Input",
-			Func = function()
-				
+			Func = function(self, input)
+				self.Speed = tonumber(input) or 100
 			end
 		},
 	},
