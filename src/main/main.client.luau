@@ -34,7 +34,7 @@ local runservice = game:GetService("RunService")
 prismaGUI = {}
 
 prismaGUI.config = {
-	Version = "<!#FV> 1.4.2 </#FV>",
+	Version = "<!#FV> 1.5.2 </#FV>",
 	ToggleGUIBind = Enum.KeyCode.Insert,
 	Personalization = {
 		["Visible On Execution"] = false,
@@ -430,6 +430,27 @@ function prismaGUI:Window(data)
 					local arg = Instance.new("Frame",mainContent)
 					arg.BackgroundTransparency = 1
 
+					local listlayout = Instance.new("UIListLayout",arg)
+					listlayout.FillDirection = Enum.FillDirection.Horizontal
+					listlayout.HorizontalFlex = Enum.UIFlexAlignment.Fill
+					listlayout.Padding = UDim.new(0, 5)
+					listlayout.SortOrder = Enum.SortOrder.Name
+
+					local argTitle = Instance.new("TextLabel",arg)
+					argTitle.Name = "a"
+					argTitle.BackgroundTransparency = 1
+					argTitle.AutomaticSize = Enum.AutomaticSize.X
+					argTitle.Size = UDim2.new(0, 0, 1, 0)
+					argTitle.Text = argument.Title or argument.Name
+					argTitle.Text = argTitle.Text..":"
+					argTitle.TextScaled = true
+					argTitle.TextSize = 20
+					argTitle.TextColor3 = Color3.fromRGB(255,255,255)
+					argTitle.Font = Enum.Font.BuilderSans
+					
+					--local max = Instance.new("UITextSizeConstraint",argTitle)
+					--max.MaxTextSize = 20
+
 					if argument.Type == "Input" then
 						local box = Instance.new("TextBox")
 						local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
@@ -438,7 +459,7 @@ function prismaGUI:Window(data)
 
 						--Properties:
 
-						box.Name = "TextLabel"
+						box.Name = "b"
 						box.Parent = arg
 						box.Active = false
 						box.AnchorPoint = Vector2.new(0, 0)
@@ -464,7 +485,49 @@ function prismaGUI:Window(data)
 						box.FocusLost:Connect(function(enterPressed, inputThatCausedFocusLoss)
 							argument.Func(data,box.Text)
 						end)
+						
+					elseif argument.Type == "Key" then
+						local box = Instance.new("TextBox")
+						local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
+						local UICorner = Instance.new("UICorner")
+						local stroke = Instance.new("UIStroke",box)
 
+						--Properties:
+
+						box.Name = "b"
+						box.Parent = arg
+						box.Active = false
+						box.AnchorPoint = Vector2.new(0, 0)
+						box.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
+						box.Position = UDim2.new(0, 0, 0, 0)
+						box.Selectable = false
+						box.Size = UDim2.new(0.800000012, 0, 1, 0)
+						box.TextColor3 = Color3.fromRGB(209, 209, 209)
+						box.Text = argument.Name
+						box.TextScaled = true
+						box.TextWrapped = true
+
+						UITextSizeConstraint.Parent = box
+						UITextSizeConstraint.MaxTextSize = 10
+
+						UICorner.CornerRadius = UDim.new(0, 6)
+						UICorner.Parent = box
+
+						stroke.Color = Color3.fromRGB(83, 83, 83)
+						stroke.Thickness = 2
+						stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+						box.Focused:Connect(function()
+							wait()
+							local connection
+							
+							connection = uis.InputBegan:Connect(function(input, proccessed)
+								argument.Func(data,input.KeyCode)
+								box.Text = input.KeyCode.Name
+								box:ReleaseFocus()
+								connection:Disconnect()
+							end)
+						end)
 					end
 					
 				end
@@ -630,7 +693,7 @@ function prismaGUI:Window(data)
 				TextButton.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
 
 				if data.OffFunc ~= nil then
-					data.OffFunc()
+					data.OffFunc(data)
 				end
 			end
 		end)
@@ -643,7 +706,7 @@ function prismaGUI:Window(data)
 				TextButton.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
 
 				if data.OffFunc ~= nil then
-					data.OffFunc()
+					data.OffFunc(data)
 				end
 			end
 		end
@@ -680,19 +743,59 @@ function prismaGUI:Window(data)
 	return self
 end
 
-
+function prismaGUI:Notify(message, type)
+	
+end
 
 local client = prismaGUI:Window({
 	Name = "Client",
 })
+--world.Obj.Position += UDim2.new(0,350, 0, 0)
 
-local world = prismaGUI:Window({
-	Name = "World",
+local tp = client:Toggle({
+	Name = "Click TP",
+    State = false,
+	Key = Enum.KeyCode.V,
+	Func = function(self)
+		self.Enabled = true
+	end,
+	OffFunc = function(self)
+		self.Enabled = false
+	end,
+	Arguments = {
+		{
+			Title = "Key",
+			Name = "V",
+			Type = "Key",
+			Func = function(self, input)
+				self.Key = input
+			end
+		},
+	},
 })
-world.Obj.Position += UDim2.new(0,350, 0, 0)
+uis.InputBegan:Connect(function(input, gameProcessedEvent)
+	if not gameProcessedEvent and tp.Data.Enabled then
+		if input.KeyCode == tp.Data.Key then
+			if mouse.Target == nil then return end
+			pcall(function()
+				local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+				local hipHeight = humanoid and humanoid.HipHeight > 0 and (humanoid.HipHeight + 1)
+				local rootPart = plr.Character:FindFirstChild("HumanoidRootPart")
+				local rootPartPosition = rootPart.Position
+				local hitPosition = mouse.Hit.Position
+				local newCFrame = CFrame.new(
+					hitPosition, 
+					Vector3.new(rootPartPosition.X, hitPosition.Y, rootPartPosition.Z)
+				) * CFrame.Angles(0, math.pi, 0)
+
+				rootPart.CFrame = newCFrame + Vector3.new(0, hipHeight or 4, 0)
+			end)
+		end
+	end
+end)
 
 client:Toggle({
-	Name = "Super Speed",
+	Name = "Speed",
     State = false,
 	Func = function(self)
 		plr.Character.Humanoid.WalkSpeed = self.Speed or 100
@@ -702,7 +805,8 @@ client:Toggle({
 	end,
 	Arguments = {
 		{
-			Name = "Speed",
+			Title = "Speed",
+			Name = "100",
 			Type = "Input",
 			Func = function(self, input)
 				self.Speed = tonumber(input) or 100
@@ -711,35 +815,24 @@ client:Toggle({
 	},
 })
 
-client:Button({
-	Name = "Super Jump",
+client:Toggle({
+	Name = "High Jump",
+    State = false,
 	Func = function(self)
 		plr.Character.Humanoid.UseJumpPower = true
-		plr.Character.Humanoid.JumpPower = self.JP or 400
+		plr.Character.Humanoid.JumpPower = self.JP or 100
+	end,
+	OffFunc = function()
+		plr.Character.Humanoid.JumpPower = 50
 	end,
 	Arguments = {
 		{
-			Name = "JumpPower",
+			Title = "Jump power",
+			Name = "100",
 			Type = "Input",
 			Func = function(self, input)
-				self.JP = tonumber(input) or 400
+				self.JP = tonumber(input) or 100
 			end
 		},
 	},
-})
-
-world:Button({
-	Name = "Delete Baseplate",
-	Func = function()
-		workspace.Baseplate:Destroy()
-	end,
-})
-
-
-world:Toggle({
-	Name = "Print",
-	State = false,
-	Func = function()
-		print("Hello World")
-	end,
 })
