@@ -462,7 +462,6 @@ function prismaGUI:Window(data)
 					end
 					
 				end
-
 			end
 			data.ContextOpen = not data.ContextOpen
 			local argumentContents = button:FindFirstChild("ArgumentContents")
@@ -529,7 +528,9 @@ function prismaGUI:Window(data)
 		UITextSizeConstraint.MaxTextSize = 14
 		
 		TextButton.MouseButton1Down:Connect(function()
-			task.spawn(data.Func)
+			task.spawn(function()
+				data.Func(data)
+			end)
 			
 			local c = Instance.new("ImageLabel")
 			c.Name = "Sample"
@@ -568,6 +569,8 @@ function prismaGUI:Window(data)
 			TextButton.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
 		end)
 		
+		data.Obj = TextButton
+
 		TextButton.MouseButton2Click:Connect(function()
 			rightclickArgument(data)
 		end)
@@ -704,10 +707,19 @@ client:Toggle({
 
 client:Button({
 	Name = "Super Jump",
-	Func = function()
+	Func = function(self)
 		plr.Character.Humanoid.UseJumpPower = true
-		plr.Character.Humanoid.JumpPower = 400
+		plr.Character.Humanoid.JumpPower = self.JP or 400
 	end,
+	Arguments = {
+		{
+			Name = "JumpPower",
+			Type = "Input",
+			Func = function(self, input)
+				self.JP = tonumber(input) or 400
+			end
+		},
+	},
 })
 
 world:Button({
