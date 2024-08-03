@@ -5,8 +5,7 @@
 	
 	Config saving and loading
 	Add notifications
-	Add argument support with right click gui to change arguments
-	Sliders
+	Sliders for arguments
 	
 	
 	#Hud
@@ -34,22 +33,24 @@ local runservice = game:GetService("RunService")
 
 prismaGUI = {}
 
+prismaGUI.config = {
+	Version = "<!#FV> 1.4.2 </#FV>",
+	ToggleGUIBind = Enum.KeyCode.Insert,
+	Personalization = {
+		["Visible On Execution"] = false,
+		["Toggle On Colour"] = Color3.fromRGB(0, 141, 212),
+		["Hover Colour"] = Color3.fromRGB(47, 47, 47)
+	},
+	Binds = {},
+}
+
 prismaGUI.Gui = Instance.new("ScreenGui",plr.PlayerGui)
 prismaGUI.Gui.Name = "Prisma Utility"
 prismaGUI.Gui.ResetOnSpawn = false
 prismaGUI.Gui.IgnoreGuiInset = true
 prismaGUI.Gui.DisplayOrder = 9999
 prismaGUI.Gui.Parent = plr.PlayerGui
-
-
-prismaGUI.config = {
-	Version = "<!#FV> 1.4.1 </#FV>",
-	Personalization = {
-		["Toggle On Colour"] = Color3.fromRGB(0, 141, 212),
-		["Hover Colour"] = Color3.fromRGB(47, 47, 47)
-	},
-	Binds = {},
-}
+prismaGUI.Gui.Enabled = prismaGUI.config.Personalization["Visible On Execution"]
 
 function bindObject(object, key)
 	local binds = prismaGUI.config.Binds
@@ -74,6 +75,11 @@ function bindObject(object, key)
 end
 uis.InputBegan:Connect(function(input, processed)
 	if processed then return end
+
+	if input.KeyCode == prismaGUI.config.ToggleGUIBind then
+		prismaGUI.Gui.Enabled = not prismaGUI.Gui.Enabled
+	end
+
 	for i,v in pairs(prismaGUI.config.Binds) do
 		if v.Key == input.KeyCode then
 			task.spawn(function()
