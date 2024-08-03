@@ -34,7 +34,7 @@ local runservice = game:GetService("RunService")
 prismaGUI = {}
 
 prismaGUI.config = {
-	Version = "<!#FV> 1.5.3 </#FV>",
+	Version = "<!#FV> 1.5.4 </#FV>",
 	ToggleGUIBind = Enum.KeyCode.Insert,
 	Personalization = {
 		["Visible On Execution"] = false,
@@ -768,7 +768,7 @@ local client = prismaGUI:Window({
 
 local tp = client:Toggle({
 	Name = "Click TP",
-    State = false,
+    State = true,
 	Key = Enum.KeyCode.V,
 	Func = function(self)
 		self.Enabled = true
@@ -849,4 +849,11 @@ client:Toggle({
 			end
 		},
 	},
+})
+
+client:Button({
+	Name = "Reset",
+	Func = function(self)
+		plr.Character:BreakJoints()
+	end,
 })
