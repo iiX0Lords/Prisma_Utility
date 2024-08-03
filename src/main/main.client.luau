@@ -248,57 +248,52 @@ function prismaGUI:Window(data)
 	--// Dragging
 	
 	task.spawn(function()
+		local Hovered = false
+		local Holding = false
+		local MoveCon = nil
 
-		local gui = template
+		local InitialX, InitialY, UIInitialPos
 
-		local dragging
-		local dragInput
-		local dragStart
-		local startPos
+		--// Functions
 
-		local function Lerp(a, b, m)
-			return a + (b - a) * m
-		end;
+		local function Drag()
+			if Holding == false then MoveCon:Disconnect(); return end
+			local distanceMovedX = InitialX - mouse.X
+			local distanceMovedY = InitialY - mouse.Y
 
-		local lastMousePos
-		local lastGoalPos
-		local DRAG_SPEED = (8)
-		local function Update(dt)
-			if not (startPos) then return end;
-			if not (dragging) and (lastGoalPos) then
-				gui.Position = UDim2.new(startPos.X.Scale, Lerp(gui.Position.X.Offset, lastGoalPos.X.Offset, dt * DRAG_SPEED), startPos.Y.Scale, Lerp(gui.Position.Y.Offset, lastGoalPos.Y.Offset, dt * DRAG_SPEED))
-				return 
-			end;
+			tweenservice:Create(template,TweenInfo.new(.3),{
+				Position = UIInitialPos - UDim2.new(0, distanceMovedX, 0, distanceMovedY)
+			}):Play()
+			--template.Position = UIInitialPos - UDim2.new(0, distanceMovedX, 0, distanceMovedY)
+		end
 
-			local delta = (lastMousePos - uis:GetMouseLocation())
-			local xGoal = (startPos.X.Offset - delta.X)
-			local yGoal = (startPos.Y.Offset - delta.Y)
-			lastGoalPos = UDim2.new(startPos.X.Scale, xGoal, startPos.Y.Scale, yGoal)
-			gui.Position = UDim2.new(startPos.X.Scale, Lerp(gui.Position.X.Offset, xGoal, dt * DRAG_SPEED), startPos.Y.Scale, Lerp(gui.Position.Y.Offset, yGoal, dt * DRAG_SPEED))
-		end;
+		--// Connections
 
-		gui.InputBegan:Connect(function(input)
+		template.MouseEnter:Connect(function()
+			Hovered = true
+		end)
+
+		template.MouseLeave:Connect(function()
+			Hovered = false
+		end)
+
+		uis.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				dragging = true
-				dragStart = input.Position
-				startPos = gui.Position
-				lastMousePos = uis:GetMouseLocation()
+				Holding = Hovered
+				if Holding then
+					InitialX, InitialY = mouse.X, mouse.Y
+					UIInitialPos = template.Position
 
-				input.Changed:Connect(function()
-					if input.UserInputState == Enum.UserInputState.End then
-						dragging = false
-					end
-				end)
+					MoveCon = mouse.Move:Connect(Drag)
+				end
 			end
 		end)
 
-		gui.InputChanged:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-				dragInput = input
+		uis.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				Holding = false
 			end
 		end)
-
-		runservice.Heartbeat:Connect(Update)
 	end)
 	
 	
