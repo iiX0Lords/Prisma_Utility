@@ -43,7 +43,7 @@ prismaGUI.Gui.Parent = plr.PlayerGui
 
 
 prismaGUI.config = {
-	Version = "<!#FV> 1.3.0 </#FV>",
+	Version = "<!#FV> 1.3.1 </#FV>",
 	Personalization = {
 		["Toggle On Colour"] = Color3.fromRGB(0, 141, 212),
 		["Hover Colour"] = Color3.fromRGB(47, 47, 47)
