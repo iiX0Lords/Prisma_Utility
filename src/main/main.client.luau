@@ -426,10 +426,13 @@ function prismaGUI:Window(data)
 			end
 			data.ContextOpen = not data.ContextOpen
 			local argumentContents = button:FindFirstChild("ArgumentContents")
+
 			if data.ContextOpen then --// Open
 				tweenservice:Create(button, TweenInfo.new(0.2), {
 					Size = UDim2.new(1, 0, 0, 70 + argumentContents:FindFirstChildOfClass("UIGridLayout").AbsoluteContentSize.Y)
 				}):Play()
+
+				button:FindFirstAncestorOfClass("UIPadding").PaddingTop = UDim.new(0, 10)
 
 				button.TextYAlignment = Enum.TextYAlignment.Top			
 				button:FindFirstChildOfClass("TextBox").Visible = false
@@ -439,6 +442,9 @@ function prismaGUI:Window(data)
 				tweenservice:Create(button, TweenInfo.new(0.2), {
 					Size = UDim2.new(1, 0, 0, 35)
 				}):Play()
+
+				button:FindFirstAncestorOfClass("UIPadding").PaddingTop = UDim.new(0, 0)
+
 				button.TextYAlignment = Enum.TextYAlignment.Center
 				button:FindFirstChildOfClass("TextBox").Visible = true
 				argumentContents.Visible = false
