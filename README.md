@@ -117,3 +117,4 @@ All argument functions receive both the input type and the data from the origina
 | `Repeating` | `bool` | **Required**. If true then Func will be fired continuously|
 | `State` | `bool` | **Required**. Default state|
 | `Func` | `function` | **Required**. Fired when toggled or continuously fired if Repeating is true|
+| `OffFunc` | `function` | **Required**. Fired when toggled off|
