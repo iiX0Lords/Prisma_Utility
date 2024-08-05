@@ -4,7 +4,7 @@ Heheheha
 # Installation
 ```lua
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/iiX0Lords/Prisma_Utility/main/src/main/main.luau'),true))()
-library:ChangeConfig({ --// Refer to quick links in order to find out more values to change.
+library:ChangeConfig({ --// Refer to default config in order to find out more values to change.
     ["Visible On Execution"] = false,
 })
 library:Init() --// This must be called after setting config otherwise the config wont be set.
