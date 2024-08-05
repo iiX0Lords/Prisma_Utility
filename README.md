@@ -118,3 +118,28 @@ All argument functions receive both the input type and the data from the origina
 | `State` | `bool` | **Required**. Default state|
 | `Func` | `function` | **Required**. Fired when toggled or continuously fired if Repeating is true|
 | `OffFunc` | `function` | **Required**. Fired when toggled off|
+
+
+## Slider
+```lua
+{
+    Title = "Jump power",
+    Type = "Slider",
+    Min = 50,
+    Max = 200,
+    Value = 50,
+    Increment = 5,
+    Func = function(self, input)
+        plr.Character.Humanoid.JumpPower = input
+    end
+},
+```
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `Title` | `string` | **Required**. This shows above the slider|
+| `Type` | `string` | **Required**. The type of argument|
+| `Min` | `number` | **Required**. Minimum slider value|
+| `Max` | `number` | **Required**. Maximum slider value|
+| `Value` | `number` | **Required**. Default slider value|
+| `Increment` | `number` | **Required**. How much the slider value goes up by|
+| `Func` | `function` | **Required**. Fired when slider is dragged|

@@ -34,7 +34,7 @@ local runservice = game:GetService("RunService")
 prismaGUI = {}
 
 prismaGUI.config = {
-	Version = "<!#FV> 1.6.4 </#FV>",
+	Version = "<!#FV> 1.7.4 </#FV>",
 	ToggleGUIBind = Enum.KeyCode.Insert,
 	Personalization = {
 		["Visible On Execution"] = false,
@@ -430,7 +430,48 @@ function prismaGUI:Window(data)
 		return TextBox
 	end
 	
+	function slider(slider : CanvasGroup, min, max)
+
+		local sliderMovedEvent = Instance.new("BindableEvent")
+	
+		local sliderConnection
+		local endInputConnection
+		slider.InputBegan:Connect(function(input : InputObject)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				local function mouseMoved()
+					local sliderAbsolutePos = slider.AbsolutePosition
+					local sliderAbsoluteSize = slider.AbsoluteSize
+					local minXPos = sliderAbsolutePos.X
+					local maxXPos = sliderAbsolutePos.X + sliderAbsoluteSize.X
+					local range = max - min
+
+					if mouse.X < minXPos then
+						slider.Bar.Size = UDim2.new(0, 0, 1, 0)
+					elseif mouse.X > maxXPos then
+						slider.Bar.Size = UDim2.new(1, 0, 1, 0)
+					else
+						slider.Bar.Size = UDim2.new(0, mouse.X - minXPos, 1, 0)
+					end
+		
+					sliderMovedEvent:Fire(slider.Bar.AbsoluteSize.X / sliderAbsoluteSize.X * range + min)
+				end
+				mouseMoved()
+				sliderConnection = mouse.Move:Connect(mouseMoved)
+		
+				endInputConnection = uis.InputEnded:Connect(function(input, gp)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 then
+						sliderConnection:Disconnect()
+						endInputConnection:Disconnect()
+					end
+				end)
+			end
+		end)
+	
+		return sliderMovedEvent.Event
+	end
+
 	function rightclickArgument(data)
+		data.Obj.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
 		if data.Arguments ~= nil then
 			local button : TextButton = data.Obj
 			if data.ContextOpen == nil then
@@ -612,7 +653,51 @@ function prismaGUI:Window(data)
 								end
 							end)
 						end
+					elseif argument.Type == "Slider" then
 
+						listlayout:Destroy()
+						argTitle.AnchorPoint = Vector2.new(0.5, 0)
+						argTitle.Position = UDim2.new(0.5, 0, 0, 0)
+						argTitle.Size = UDim2.new(1, 0, 0.5, 0)
+
+						local container = Instance.new("CanvasGroup",arg)
+						container.Size = UDim2.new(1, 0, 0.5, 0)
+						container.AnchorPoint = Vector2.new(0.5, 1)
+						container.Position = UDim2.new(0.5, 0, 1, 0)
+						container.BorderSizePixel = 0
+						container.BackgroundColor3 = Color3.fromRGB(49, 49, 49)
+
+						Instance.new("UICorner",container).CornerRadius = UDim.new(1, 0)
+						
+						local label = Instance.new("TextLabel",arg)
+						label.Size = UDim2.new(1, 0, 0.5, 0)
+						label.AnchorPoint = Vector2.new(0.5, 1)
+						label.Position = UDim2.new(0.5, 0, 1, 1)
+						label.Font = Enum.Font.BuilderSansBold
+						label.TextColor3 = Color3.fromRGB(255,255,255)
+						label.BorderSizePixel = 0
+						label.BackgroundTransparency = 1
+						label.TextScaled = true
+						label.Text = tostring(argument.Value)
+						
+						local bar = container:Clone()
+						bar.Parent = container
+						bar.Name = "Bar"
+						bar.AnchorPoint = Vector2.new(0, 0.5)
+						bar.Size = UDim2.new(0, 0, 1, 0)
+						bar.Position = UDim2.new(0, 0, 0.5, 0)
+						bar.BorderSizePixel = 0
+						bar.BackgroundColor3 = prismaGUI.config.Personalization["Toggle On Colour"]
+
+						local event : BindableEvent = slider(container, argument.Min, argument.Max)
+						event:Connect(function(value)
+							local val = math.floor(value + 0.5)
+							val = (math.floor(val / argument.Increment + 0.5) * argument.Increment)
+							label.Text = tostring(val)
+							argument.Value = val
+							
+							argument.Func(data, val)
+						end)
 					end
 					
 				end
@@ -682,6 +767,7 @@ function prismaGUI:Window(data)
 		UITextSizeConstraint.MaxTextSize = 14
 		
 		TextButton.MouseButton1Down:Connect(function()
+			if data.ContextOpen then return end
 			task.spawn(function()
 				data.Func(data)
 			end)
@@ -716,6 +802,7 @@ function prismaGUI:Window(data)
 		local bindButton = addBindButton(TextButton, data)
 		
 		TextButton.MouseEnter:Connect(function()
+			if data.ContextOpen then return end
 			TextButton.BackgroundColor3 = prismaGUI.config.Personalization["Hover Colour"]
 		end)
 		TextButton.MouseLeave:Connect(function()
@@ -772,6 +859,7 @@ function prismaGUI:Window(data)
 		UITextSizeConstraint.MaxTextSize = 14
 
 		TextButton.MouseButton1Down:Connect(function()
+			if data.ContextOpen then return end
 			data.State = not data.State
 			
 			if data.State == false then
@@ -799,6 +887,7 @@ function prismaGUI:Window(data)
 		local bindButton = addBindButton(TextButton, data)
 
 		TextButton.MouseEnter:Connect(function()
+			if data.ContextOpen then return end
 			TextButton.BackgroundColor3 = prismaGUI.config.Personalization["Hover Colour"]
 		end)
 		TextButton.MouseLeave:Connect(function()
@@ -914,10 +1003,13 @@ if runservice:IsStudio() then
 		Arguments = {
 			{
 				Title = "Jump power",
-				Name = "100",
-				Type = "Input",
+				Min = 50,
+				Max = 200,
+				Value = 50,
+				Increment = 5,
+				Type = "Slider",
 				Func = function(self, input)
-					self.JP = tonumber(input) or 100
+					plr.Character.Humanoid.WalkSpeed = input
 				end
 			},
 		},
