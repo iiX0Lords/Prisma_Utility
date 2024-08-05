@@ -34,7 +34,7 @@ local runservice = game:GetService("RunService")
 prismaGUI = {}
 
 prismaGUI.config = {
-	Version = "<!#FV> 1.5.4 </#FV>",
+	Version = "<!#FV> 1.6.4 </#FV>",
 	ToggleGUIBind = Enum.KeyCode.Insert,
 	Personalization = {
 		["Visible On Execution"] = false,
@@ -542,6 +542,77 @@ function prismaGUI:Window(data)
 							local key = doKeyTextbox(box)
 							argument.Func(data,key)
 						end)
+
+					elseif argument.Type == "Toggle" then
+						listlayout.HorizontalFlex = Enum.UIFlexAlignment.None
+						local box = Instance.new("TextButton")
+						local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
+						local UICorner = Instance.new("UICorner")
+						local stroke = Instance.new("UIStroke",box)
+
+						--Properties:
+
+						box.Name = "b"
+						box.Parent = arg
+						box.Active = false
+						box.AnchorPoint = Vector2.new(0, 0)
+						box.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
+						box.Position = UDim2.new(0, 0, 0, 0)
+						box.Selectable = false
+						box.Size = UDim2.new(0.15, 0, 1, 0)
+						box.TextColor3 = Color3.fromRGB(209, 209, 209)
+						box.TextScaled = true
+						box.TextWrapped = true
+						box.TextTransparency = 1
+
+						UITextSizeConstraint.Parent = box
+						UITextSizeConstraint.MaxTextSize = 10
+
+						UICorner.CornerRadius = UDim.new(0, 6)
+						UICorner.Parent = box
+
+						stroke.Color = Color3.fromRGB(83, 83, 83)
+						stroke.Thickness = 2
+						stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+						box.MouseButton1Down:Connect(function()
+							argument.State = not argument.State
+							
+							if argument.State == false then
+								box.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
+				
+								if argument.OffFunc ~= nil then
+									argument.OffFunc(data)
+								end
+							elseif argument.State then
+								box.BackgroundColor3 = prismaGUI.config.Personalization["Toggle On Colour"]
+								argument.NormalFunc(data)
+							end
+						end)
+						
+						argument.NormalFunc = argument.Func
+						argument.Func = function()
+							argument.State = not argument.State
+							
+							if argument.State == false then
+								box.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
+				
+								if argument.OffFunc ~= nil then
+									argument.OffFunc(data)
+								end
+							end
+						end
+						--// If performance problems occur change this 
+						if argument.Repeating then
+							runservice:BindToRenderStep(argument.Title,1,function()
+							
+								if argument.State then
+									box.BackgroundColor3 = prismaGUI.config.Personalization["Toggle On Colour"]
+									argument.NormalFunc(data)
+								end
+							end)
+						end
+
 					end
 					
 				end
@@ -855,8 +926,28 @@ if runservice:IsStudio() then
 	client:Button({
 		Name = "Reset",
 		Func = function(self)
-			plr.Character:BreakJoints()
+			if self.Joints then
+				plr.Character:BreakJoints()
+				else
+				plr.Character.Humanoid.Health = 0
+			end
 		end,
+		Arguments = {
+			{
+				Title = "Break Joints",
+				Type = "Toggle",
+				Repeating = false,
+				State = false,
+				Func = function(self, input)
+					self.Joints = true
+					print("Sigma")
+				end,
+				OffFunc = function(self)
+					self.Joints = false
+					print("Unsigma")
+				end
+			},
+		},
 	})
 else
 	return prismaGUI

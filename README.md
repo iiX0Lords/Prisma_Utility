@@ -94,3 +94,26 @@ All argument functions receive both the input type and the data from the origina
 | `Name` | `string` | **Required**. This is the default button/text shown inside the box|
 | `Type` | `string` | **Required**. The type of argument|
 | `Func` | `function` | **Required**. Fired after the [TextBox](https://create.roblox.com/docs/reference/engine/classes/TextBox) looses focus|
+
+## Toggle
+```lua
+{
+    Title = "Example",
+    Type = "Toggle",
+    Repeating = false,
+    State = false,
+    Func = function(self, input)
+        print("On")
+    end,
+    OffFunc = function(self)
+        print("Off")
+    end
+},
+```
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `Title` | `string` | **Required**. This shows next to the input|
+| `Type` | `string` | **Required**. The type of argument|
+| `Repeating` | `bool` | **Required**. If true then Func will be fired continuously|
+| `State` | `bool` | **Required**. Default state|
+| `Func` | `function` | **Required**. Fired when toggled or continuously fired if Repeating is true|
