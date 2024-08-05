@@ -7,7 +7,9 @@ Heheheha
 # Documentation
 
 * Quick Links:
-    - [Button](#Button)
+    - [Button](##Button)
+    - [Toggle](##Toggle)
+    - [Argument Types](#Argument-Types:)
 
 ## Button
 
