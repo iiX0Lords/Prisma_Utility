@@ -7,9 +7,9 @@ Heheheha
 # Documentation
 
 * Quick Links:
-    - [Button](##Button)
-    - [Toggle](##Toggle)
-    - [Argument Types](#Argument-Types:)
+    - [Button](#Button)
+    - [Toggle](#Toggle)
+    - [Argument Types](#Argument-Types)
 
 ## Button
 
@@ -26,7 +26,7 @@ library:Button({
 | :-------- | :------- | :------------------------- |
 | `Name` | `string` | **Required**. This shows next to the button|
 | `Func` | `function` | **Required**. Fired after button is clicked|
-| `Arguments` | `table` | _Optional_. Refer to [Optional Arguments](#Argument-Types:)
+| `Arguments` | `table` | _Optional_. Refer to [Optional Arguments](#Argument-Types)
 
 ## Toggle
 
@@ -49,7 +49,7 @@ client:Toggle({
 | `State` | `bool` | **Required**. Default state of the toggle|
 | `Func` | `function` | **Required**. Fired after being toggled on|
 | `OffFunc` | `function` | **Required**. Fired after being toggled off|
-| `Arguments` | `table` | _Optional_. Refer to [Optional Arguments](#Argument-Types:)
+| `Arguments` | `table` | _Optional_. Refer to [Optional Arguments](#Argument-Types)
 
 
 
