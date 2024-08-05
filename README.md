@@ -9,7 +9,7 @@ Heheheha
 * Quick Links:
     - [Button](#Button)
 
-## Button:
+## Button
 
 ```lua
 library:Button({
@@ -24,14 +24,39 @@ library:Button({
 | :-------- | :------- | :------------------------- |
 | `Name` | `string` | **Required**. This shows next to the button|
 | `Func` | `function` | **Required**. Fired after button is clicked|
-| `Arguments` | `table` | _Optional_. Refer to [Optional Arguments](#Arguments)
+| `Arguments` | `table` | _Optional_. Refer to [Optional Arguments](#Argument-Types:)
+
+## Toggle
+
+```lua
+client:Toggle({
+    Name = "Speed",
+    State = false,
+    Func = function(self)
+        plr.Character.Humanoid.WalkSpeed = 100
+    end,
+    OffFunc = function(self)
+        plr.Character.Humanoid.WalkSpeed = 16
+    end,
+})
+```
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `Name` | `string` | **Required**. This shows next to the button|
+| `State` | `bool` | **Required**. Default state of the toggle|
+| `Func` | `function` | **Required**. Fired after being toggled on|
+| `OffFunc` | `function` | **Required**. Fired after being toggled off|
+| `Arguments` | `table` | _Optional_. Refer to [Optional Arguments](#Argument-Types:)
 
 
 
 
-## Arguments
+## Argument Types:
 
-### Input
+All argument functions receive both the input type and the data from the original button so you can store your own data. [Example](##Key)
+
+## Input
 ```lua
 {
     Title = "Walkspeed",
@@ -46,4 +71,24 @@ library:Button({
 | :-------- | :------- | :------------------------- |
 | `Title` | `string` | **Required**. This shows next to the button|
 | `Name` | `string` | **Required**. This is the default text shown inside the box|
+| `Type` | `string` | **Required**. The type of argument|
+| `Func` | `function` | **Required**. Fired after the [TextBox](https://create.roblox.com/docs/reference/engine/classes/TextBox) looses focus|
+
+
+## Key
+```lua
+{
+    Title = "Key",
+    Name = "V",
+    Type = "Input"
+    Func = function(self, input)
+        self.Key = input
+    end,
+}
+```
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `Title` | `string` | **Required**. This shows next to the input|
+| `Name` | `string` | **Required**. This is the default button/text shown inside the box|
+| `Type` | `string` | **Required**. The type of argument|
 | `Func` | `function` | **Required**. Fired after the [TextBox](https://create.roblox.com/docs/reference/engine/classes/TextBox) looses focus|
