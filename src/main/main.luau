@@ -5,7 +5,6 @@
 	
 	Config saving and loading
 	Add notifications
-	Sliders for arguments
 	
 	
 	#Hud
@@ -34,9 +33,9 @@ local runservice = game:GetService("RunService")
 prismaGUI = {}
 
 prismaGUI.config = {
-	Version = "<!#FV> 1.7.4 </#FV>",
-	ToggleGUIBind = Enum.KeyCode.Insert,
+	Version = "<!#FV> 1.7.6 </#FV>",
 	Personalization = {
+		["ToggleGUIBind"] = Enum.KeyCode.Insert,
 		["Visible On Execution"] = false,
 		["Toggle On Colour"] = Color3.fromRGB(0, 141, 212),
 		["Hover Colour"] = Color3.fromRGB(47, 47, 47)
@@ -44,6 +43,17 @@ prismaGUI.config = {
 	Binds = {},
 }
 
+function prismaGUI:ChangeConfig(data)
+	for n,v in pairs(data) do
+		if prismaGUI.config.Personalization[n] ~= nil then
+			prismaGUI.config.Personalization[n] = v
+			print(`Changed {n} to {tostring(v)}`)
+		end
+	end
+end
+
+function prismaGUI:Init()
+	
 prismaGUI.Gui = Instance.new("ScreenGui",plr.PlayerGui)
 prismaGUI.Gui.Name = "Prisma Utility"
 prismaGUI.Gui.ResetOnSpawn = false
@@ -83,7 +93,7 @@ end
 uis.InputBegan:Connect(function(input, processed)
 	if processed then return end
 
-	if input.KeyCode == prismaGUI.config.ToggleGUIBind then
+	if input.KeyCode == prismaGUI.config.Personalization.ToggleGUIBind then
 		prismaGUI.Gui.Enabled = not prismaGUI.Gui.Enabled
 	end
 
@@ -921,126 +931,6 @@ function prismaGUI:Notify(message, type)
 	
 end
 
-if runservice:IsStudio() then
-	local client = prismaGUI:Window({
-		Name = "Client",
-	})
-	--world.Obj.Position += UDim2.new(0,350, 0, 0)
-	
-	local tp = client:Toggle({
-		Name = "Click TP",
-		State = true,
-		Key = Enum.KeyCode.V,
-		Func = function(self)
-			self.Enabled = true
-		end,
-		OffFunc = function(self)
-			self.Enabled = false
-		end,
-		Arguments = {
-			{
-				Title = "Key",
-				Name = "V",
-				Type = "Key",
-				Func = function(self, input)
-					self.Key = input
-				end
-			},
-		},
-	})
-	uis.InputBegan:Connect(function(input, gameProcessedEvent)
-		if not gameProcessedEvent and tp.Data.Enabled then
-			if input.KeyCode == tp.Data.Key then
-				if mouse.Target == nil then return end
-				pcall(function()
-					local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-					local hipHeight = humanoid and humanoid.HipHeight > 0 and (humanoid.HipHeight + 1)
-					local rootPart = plr.Character:FindFirstChild("HumanoidRootPart")
-					local rootPartPosition = rootPart.Position
-					local hitPosition = mouse.Hit.Position
-					local newCFrame = CFrame.new(
-						hitPosition, 
-						Vector3.new(rootPartPosition.X, hitPosition.Y, rootPartPosition.Z)
-					) * CFrame.Angles(0, math.pi, 0)
-	
-					rootPart.CFrame = newCFrame + Vector3.new(0, hipHeight or 4, 0)
-				end)
-			end
-		end
-	end)
-	
-	client:Toggle({
-		Name = "Speed",
-		State = false,
-		Func = function(self)
-			plr.Character.Humanoid.WalkSpeed = self.Speed or 100
-		end,
-		OffFunc = function()
-			plr.Character.Humanoid.WalkSpeed = 16
-		end,
-		Arguments = {
-			{
-				Title = "Speed",
-				Name = "100",
-				Type = "Input",
-				Func = function(self, input)
-					self.Speed = tonumber(input) or 100
-				end
-			},
-		},
-	})
-	
-	client:Toggle({
-		Name = "High Jump",
-		State = false,
-		Func = function(self)
-			plr.Character.Humanoid.UseJumpPower = true
-			plr.Character.Humanoid.JumpPower = self.JP or 100
-		end,
-		OffFunc = function()
-			plr.Character.Humanoid.JumpPower = 50
-		end,
-		Arguments = {
-			{
-				Title = "Jump power",
-				Min = 50,
-				Max = 200,
-				Value = 50,
-				Increment = 5,
-				Type = "Slider",
-				Func = function(self, input)
-					plr.Character.Humanoid.WalkSpeed = input
-				end
-			},
-		},
-	})
-	
-	client:Button({
-		Name = "Reset",
-		Func = function(self)
-			if self.Joints then
-				plr.Character:BreakJoints()
-				else
-				plr.Character.Humanoid.Health = 0
-			end
-		end,
-		Arguments = {
-			{
-				Title = "Break Joints",
-				Type = "Toggle",
-				Repeating = false,
-				State = false,
-				Func = function(self, input)
-					self.Joints = true
-					print("Sigma")
-				end,
-				OffFunc = function(self)
-					self.Joints = false
-					print("Unsigma")
-				end
-			},
-		},
-	})
-else
-	return prismaGUI
 end
+
+return prismaGUI

@@ -1,8 +1,24 @@
 
 # Prisma UI Library
-
 Heheheha
+# Installation
+```lua
+local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/iiX0Lords/Prisma_Utility/main/src/main/main.luau'),true))()
+library:ChangeConfig({ --// Refer to quick links in order to find out more values to change.
+    ["Visible On Execution"] = false,
+})
+library:Init() --// This must be called after setting config otherwise the config wont be set.
+```
 
+## Default Config:
+```lua
+{
+    ["ToggleGUIBind"] = Enum.KeyCode.Insert,
+	["Visible On Execution"] = false,
+	["Toggle On Colour"] = Color3.fromRGB(0, 141, 212),
+	["Hover Colour"] = Color3.fromRGB(47, 47, 47)
+},
+```
 
 # Documentation
 
@@ -10,6 +26,7 @@ Heheheha
     - [Button](#Button)
     - [Toggle](#Toggle)
     - [Argument Types](#Argument-Types)
+
 
 ## Button
 
