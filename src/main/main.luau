@@ -33,7 +33,7 @@ local runservice = game:GetService("RunService")
 prismaGUI = {}
 
 prismaGUI.config = {
-	Version = "<!#FV> 1.7.6 </#FV>",
+	Version = "<!#FV> 1.7.7 </#FV>",
 	Personalization = {
 		["ToggleGUIBind"] = Enum.KeyCode.Insert,
 		["Visible On Execution"] = false,
@@ -489,18 +489,24 @@ function prismaGUI:Window(data)
 				
 				local mainContent = Instance.new("Frame",button)
 				mainContent.Name = "ArgumentContents"
-				mainContent.AnchorPoint = Vector2.new(0, 0)
-				mainContent.Size = UDim2.new(0.95, 0, 0.7, 0)
-				mainContent.Position = UDim2.new(0, 0, 0, 23)
-				mainContent.BackgroundTransparency = 1
+				mainContent.AnchorPoint = Vector2.new(0.5, 0)
+				mainContent.Size = UDim2.new(1., 0, 1, 0)
+				mainContent.Position = UDim2.new(0.5, 0, 0, 23)
+				mainContent.BackgroundTransparency = 0
+				mainContent.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
 				mainContent.Visible = false
-				local layout = Instance.new("UIGridLayout",mainContent)
-				layout.CellSize = UDim2.new(1, 0, 0, 25)
-				layout.CellPadding = UDim2.new(0, 0, 0, 10)
+				local layout = Instance.new("UIListLayout",mainContent)
+				layout.Padding = UDim.new(0, 10)
+
+				local thesigma = Instance.new("UIPadding",mainContent)
+				thesigma.PaddingTop = UDim.new(0, 5)
+				thesigma.PaddingRight = UDim.new(0, 5)
+				thesigma.PaddingLeft = UDim.new(0, 5)
 
 				for _,argument in pairs(data.Arguments) do
 					local arg = Instance.new("Frame",mainContent)
 					arg.BackgroundTransparency = 1
+					arg.Size = UDim2.new(1, 0, 0, 25)
 
 					local listlayout = Instance.new("UIListLayout",arg)
 					listlayout.FillDirection = Enum.FillDirection.Horizontal
@@ -669,11 +675,12 @@ function prismaGUI:Window(data)
 						argTitle.AnchorPoint = Vector2.new(0.5, 0)
 						argTitle.Position = UDim2.new(0.5, 0, 0, 0)
 						argTitle.Size = UDim2.new(1, 0, 0.5, 0)
+						arg.Size = UDim2.new(1, 0, 0, 35)
 
 						local container = Instance.new("CanvasGroup",arg)
-						container.Size = UDim2.new(1, 0, 0.5, 0)
+						container.Size = UDim2.new(1, 0, 0.3, 0)
 						container.AnchorPoint = Vector2.new(0.5, 1)
-						container.Position = UDim2.new(0.5, 0, 1, 0)
+						container.Position = UDim2.new(0.5, 0, 0.9, 0)
 						container.BorderSizePixel = 0
 						container.BackgroundColor3 = Color3.fromRGB(49, 49, 49)
 
@@ -683,12 +690,15 @@ function prismaGUI:Window(data)
 						label.Size = UDim2.new(1, 0, 0.5, 0)
 						label.AnchorPoint = Vector2.new(0.5, 1)
 						label.Position = UDim2.new(0.5, 0, 1, 1)
-						label.Font = Enum.Font.BuilderSansBold
+						label.Font = Enum.Font.BuilderSans
 						label.TextColor3 = Color3.fromRGB(255,255,255)
 						label.BorderSizePixel = 0
 						label.BackgroundTransparency = 1
 						label.TextScaled = true
 						label.Text = tostring(argument.Value)
+
+						local maxSez = Instance.new("UITextSizeConstraint",label)
+						maxSez.MaxTextSize = 15
 						
 						local bar = container:Clone()
 						bar.Parent = container
@@ -708,6 +718,7 @@ function prismaGUI:Window(data)
 							
 							argument.Func(data, val)
 						end)
+
 					end
 					
 				end
@@ -717,7 +728,7 @@ function prismaGUI:Window(data)
 
 			if data.ContextOpen then --// Open
 				tweenservice:Create(button, TweenInfo.new(0.2), {
-					Size = UDim2.new(1, 0, 0, 40 + argumentContents:FindFirstChildOfClass("UIGridLayout").AbsoluteContentSize.Y)
+					Size = UDim2.new(1, 0, 0, 40 + argumentContents:FindFirstChildOfClass("UIListLayout").AbsoluteContentSize.Y)
 				}):Play()
 
 				button:FindFirstChildOfClass("UIPadding").PaddingTop = UDim.new(0, 10)
@@ -759,7 +770,7 @@ function prismaGUI:Window(data)
 		TextButton.BorderSizePixel = 0
 		TextButton.Size = UDim2.new(1, 0, 0, 35)
 		TextButton.Font = Enum.Font.BuilderSans
-		TextButton.Text = data.Name or "Button"
+		TextButton.Text = "  "..data.Name or "Button"
 		TextButton.TextColor3 = Color3.fromRGB(209, 209, 209)
 		TextButton.TextScaled = true
 		TextButton.TextSize = 14.000
@@ -770,7 +781,7 @@ function prismaGUI:Window(data)
 		TextButton.AutoButtonColor = false
 
 		UIPadding.Parent = TextButton
-		UIPadding.PaddingLeft = UDim.new(0.0500000007, 0)
+		--UIPadding.PaddingLeft = UDim.new(0.0500000007, 0)
 		
 		
 		UITextSizeConstraint.Parent = TextButton
@@ -851,7 +862,7 @@ function prismaGUI:Window(data)
 		TextButton.BorderSizePixel = 0
 		TextButton.Size = UDim2.new(1, 0, 0, 35)
 		TextButton.Font = Enum.Font.BuilderSans
-		TextButton.Text = data.Name or "Button"
+		TextButton.Text = "  "..data.Name or "Button"
 		TextButton.TextColor3 = Color3.fromRGB(209, 209, 209)
 		TextButton.TextScaled = true
 		TextButton.TextSize = 14.000
@@ -862,7 +873,7 @@ function prismaGUI:Window(data)
 		TextButton.AutoButtonColor = false
 
 		UIPadding.Parent = TextButton
-		UIPadding.PaddingLeft = UDim.new(0.0500000007, 0)
+		--UIPadding.PaddingLeft = UDim.new(0.0500000007, 0)
 
 
 		UITextSizeConstraint.Parent = TextButton

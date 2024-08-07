@@ -38,6 +38,37 @@ local tp = client:Toggle({
                 self.Key = input
             end
         },
+        {
+            Title = "Speed",
+            Name = "100",
+            Type = "Input",
+            Func = function(self, input)
+                print(input)
+            end
+        },
+        {
+            Title = "Jump power",
+            Min = 50,
+            Max = 200,
+            Value = 50,
+            Increment = 5,
+            Type = "Slider",
+            Func = function(self, input)
+                print(input)
+            end
+        },
+        {
+            Title = "Break Joints",
+            Type = "Toggle",
+            Repeating = false,
+            State = false,
+            Func = function(self, input)
+                print("Sigma")
+            end,
+            OffFunc = function(self)
+                print("Unsigma")
+            end
+        },
     },
 })
 uis.InputBegan:Connect(function(input, gameProcessedEvent)
