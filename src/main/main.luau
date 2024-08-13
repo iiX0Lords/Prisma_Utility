@@ -1,3 +1,4 @@
+local Workspace = game:GetService("Workspace")
 
 --[[
 
@@ -33,7 +34,7 @@ local runservice = game:GetService("RunService")
 prismaGUI = {}
 
 prismaGUI.config = {
-	Version = "<!#FV> 1.7.7 </#FV>",
+	Version = "<!#FV> 1.7.8 </#FV>",
 	Personalization = {
 		["ToggleGUIBind"] = Enum.KeyCode.Insert,
 		["Visible On Execution"] = false,
@@ -489,6 +490,7 @@ function prismaGUI:Window(data)
 				
 				local mainContent = Instance.new("Frame",button)
 				mainContent.Name = "ArgumentContents"
+				mainContent.BorderSizePixel = 0
 				mainContent.AnchorPoint = Vector2.new(0.5, 0)
 				mainContent.Size = UDim2.new(1., 0, 1, 0)
 				mainContent.Position = UDim2.new(0.5, 0, 0, 23)
